@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 21 14:20:42 2019
-
-@author: Alexandre
-"""
-
 import numpy as np
 import random
 
@@ -16,6 +10,10 @@ class Grille :
         """ On initialise tous les éléments que l'on va trouver dans la grille """
         self.__grille = np.zeros((N,N))
         self.__mur = []
+<<<<<<< HEAD
+        self.__positionSouris = (0,0)
+=======
+>>>>>>> 28111e5905e4bb0c7f03cd47e0acfdabe13c5b60
 
         # Souris dans la grille
         positionInit = (0,0)
@@ -81,6 +79,21 @@ class Grille :
 
     def casesVoisinesDisponibles(self,case):
         """ Cette fonction contrôle quelles cases voisines peuvent être visitée par la souris """
+<<<<<<< HEAD
+
+        i, j = case
+        voisins = [(i,j+1), (i,j-1), (i+1,j), (i-1,j)] # nord/sud/est/ouest
+
+        for v in voisins:
+            # On vérifie que la case est dans la grille
+            a , b = v
+            if a < 0 or a > N or b < 0 or b > N:
+                voisins.remove(v)
+            # On vérifie qu'il n'y a pas de mur
+            if v in self.getMurs():
+                voisins.remove(v)
+
+=======
 
         i, j = case
         voisins = [] # nord/sud/est/ouest
@@ -95,6 +108,7 @@ class Grille :
                 continue
             voisins.append(v)
 
+>>>>>>> 28111e5905e4bb0c7f03cd47e0acfdabe13c5b60
         return(voisins)
 
 
