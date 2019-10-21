@@ -83,16 +83,17 @@ class Grille :
         """ Cette fonction contrôle quelles cases voisines peuvent être visitée par la souris """
 
         i, j = case
-        voisins = [(i,j+1), (i,j-1), (i+1,j), (i-1,j)] # nord/sud/est/ouest
+        voisins = [] # nord/sud/est/ouest
 
-        for v in voisins:
+        for v in [(i,j+1), (i,j-1), (i+1,j), (i-1,j)]:
             # On vérifie que la case est dans la grille
             a , b = v
-            if a < 0 or a > N or b < 0 or b > N:
-                voisins.remove(v)
+            if a < 0 or a > (N-1) or b < 0 or b > (N-1):
+                continue
             # On vérifie qu'il n'y a pas de mur
             if v in self.getMurs():
-                voisins.remove(v)
+                continue
+            voisins.append(v)
 
         return(voisins)
 
@@ -100,6 +101,7 @@ class Grille :
 class Souris :
 
     def __init__(self, positionInit=(0,0)):
+        """ On l'initilise avec sa position de départ """
         self.__position = positionInit
 
     def getPositionSouris(self):
@@ -110,3 +112,56 @@ class Souris :
         """ Déplacement de la souris vers la case "case" """
         self.__position = case
         return self
+
+    def resetSouris(self):
+        self.__init__(positionInit=(0,0))
+
+# La classe MatriceProbabilite construit une matrice (image de la grille) qui contient
+# les probabilités de transition entre 2 cases
+class MatriceProbabilite:
+
+    global N
+
+    def __init__(self, grille):
+        """ On créé la matrice de transition probabilité avec que des zéros"""
+        self.__matrice = np.zeros((N**2,N**2))
+        self.__grille = grille
+
+    def initProbabilite(self):
+        """ Initialisation de la matrice """
+
+        def caseTuple2caseNumber(oldCase,newCase):
+
+            i,j = oldCase
+            k,l = newCase
+            return((i*N+j,k*N+l))
+
+        #liste des cases
+        listeCase = []
+        for i in range(N):
+            for j in range(N):
+                listeCase.append((i,j))
+
+        g = Grille()
+
+        for case in listeCase:
+            voisins = g.casesVoisinesDisponibles(case)
+            for v in voisins:
+                self.setCase(caseTuple2caseNumber(case,v),1/len(voisins))
+
+        return(self.getMatrice())
+
+    def getMatrice(self):
+        """ Renvoie la matrice des probabilités """
+        return(self.__matrice)
+
+    def setCase(self,case, valeur):
+        """ Modifie la valeur d'une case """
+        self.__matrice[case] = valeur
+
+    def updateMatrice(self,oldCase,newCase):
+        """ Met à jour la matrice des probabilités """
+
+        if newCase in self.getMurs():
+            self.setCase(caseTuple2caseNumber(oldCase,newCase), 0)
+            for v in 
