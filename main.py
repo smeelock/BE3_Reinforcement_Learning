@@ -10,3 +10,10 @@ import classes
 # Initialisation
 
 N = 8
+
+g = Grille()
+g.addMur([(1,1), (2,4)])
+g.addGouttesEau([(2,3), (2,6)])
+g.affichageGrille()
+
+print(g.casesVoisinesDisponibles((0,0)))
