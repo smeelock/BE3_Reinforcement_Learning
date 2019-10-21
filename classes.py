@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 21 14:20:42 2019
-
-@author: Alexandre
-"""
-
 import numpy as np
 import random
 
@@ -16,15 +10,12 @@ class Grille :
         """ On initialise tous les éléments que l'on va trouver dans la grille """
         self.__grille = np.zeros((N,N))
         self.__mur = []
-<<<<<<< HEAD
         self.__positionSouris = (0,0)
-=======
 
         # Souris dans la grille
         positionInit = (0,0)
         self.__souris = Souris(positionInit)
 
->>>>>>> 55ee61d0ea52d10887e16459280b647fe816814b
         self.__positionDecharge = []
         self.__positionEau = []
         self.__positionFromage = (random.randint(N), random.randin(N))
