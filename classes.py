@@ -16,10 +16,14 @@ class Grille:
         """ On initialise tous les éléments que l'on va trouver dans la grille """
         self.__grille = np.zeros((N,N))
         self.__mur = []
-        self.__positionSouris = (0,0)  
+        self.__positionSouris = (0,0)
         self.__positionDecharge = []
         self.__positionEau = []
         self.__positionFromage = (random.randint(N), random.randin(N))
+
+    def getGrille(self):
+        """ Renvoie la grille """
+        return(self.__grille)
 
     def getMurs(self):
         """ Renvoie les positions des murs """
@@ -48,12 +52,37 @@ class Grille:
 
     def affichageGrille(self):
         """ Renvoie un affichage dans la console de la grille
-        x : objectif
+        o : objectif
         s : souris
         * : mur
         '': case vide
         e : eau
+        x : décharge
         """
+
+        grilleAffichage = np.reshape(np.array(['']*N**2), (N,N))
+
+        for case in self.getGrille():
+            if case == self.getPositionSouris():
+                grilleAffichage[case] = 's'
+            elif case in self.getPositionEau():
+                grilleAffichage[case] = 'e'
+            elif case in self.getPositionDecharge():
+                grilleAffichage[case] = 'x'
+            elif case == self.getPositionFromage():
+                grilleAffichage[case] = 'o'
+            elif case in self.getMurs():
+                grilleAffichage[case] = '*'
+
+        print(grilleAffichage)
+
+
+    def caseDisponible(self,case):
+        """ Cette fonction contrôle si une case peut être visitée par la souris """
+
+        b = True
+
+        i
 
 
 
