@@ -21,6 +21,34 @@ class Grille :
         self.__decharges = lstDecharges if lstDecharges != None else []
         self.__gouttesEau = lstGouttesEau if lstGouttesEau != None else []
         self.__fromage = fromage if fromage != None else (np.random.randint(0,self.__dim, size=1), np.random.randint(0,self.__dim, size=1))
+
+        # Matrice de récompenses
+        self.__rewardMatrix = np.matrix(np.ones((self.__dim**2, self.__dim**2))) # matrice de n²*n² car on peut (potentiellement) aller de chaque case à chaque case,
+                                            # ie n² états possibles vers n² autre états possibles
+        self.__rewardMatrix *= -1 # matrice de -1 partout
+
+            # Decharges
+        for decharge in self.__decharges :
+            antecedents = self.casesVoisinesDisponibles(decharge)
+            # print("DEBUG: antecedents - {}".format(antecedents))
+            for v in antecedents :
+                old, new = self.fromTuple2caseNumber(v), self.fromTuple2caseNumber(decharge)
+                self.__rewardMatrix[old, new] = 0
+
+                # Gouttes d'eau
+        for goutte in self.__gouttesEau :
+            antecedents = self.casesVoisinesDisponibles(goutte)
+            # print("DEBUG: antecedents - {}".format(antecedents))
+            for v in antecedents :
+                old, new = self.fromTuple2caseNumber(v), self.fromTuple2caseNumber(goutte)
+                self.__rewardMatrix[old, new] = 50
+
+                # Fromage
+        antecedents = self.casesVoisinesDisponibles(self.__fromage)
+        # print("DEBUG: antecedents - {}".format(antecedents))
+        for v in antecedents :
+            old, new = self.fromTuple2caseNumber(v), self.fromTuple2caseNumber(self.__fromage)
+            self.__rewardMatrix[old, new] = 100
     # =============================================================================
     #                                  get...()
     # =============================================================================
