@@ -1,23 +1,28 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 21 15:07:10 2019
+import numpy as np
 
-@author: Alexandre
-"""
-
-import classes
+from Grille import *
 
 # Initialisation
-
 N = 4
 
-g = Grille()
-g.addMur([(1,1), (2,4)])
-g.addGouttesEau([(2,3), (2,6)])
+fromage = (0, 3)
+murs = [(1, 1), (1, 2), (2, 1)]
+# decharges = [(2, 2), (1, 3)]
+decharges = []
+# gouttesEau = [(3, 1), (2, 0)]
+gouttesEau = []
+g = Grille(N)
+g.addMurs(murs)
+g.addDecharges(decharges)
+g.addGouttesEau(gouttesEau)
+g.addFromage(fromage)
 g.affichageGrille()
 
+# Entraînement
+g.train(10000) # 10 000 itérations
 
-print(g.casesVoisinesDisponibles((0,0)))
-
-mat = MatriceProbabilite(g)
-print(mat.initProbabilite())
+# Test
+position_initiale = np.random.randint(0, N**2)
+g.setPositionSouris(position_initiale)
+g.play(position_initiale)
