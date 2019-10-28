@@ -1,4 +1,12 @@
 # -*- coding: utf-8 -*-
+import numpy as np
+import time
+
+RWD_DECHARGE = 0
+RWD_EAU = 50
+RWD_FROMAGE = 100
+GAMMA = 0.8
+
 # =============================================================================
 #                               Classe Grille
 # =============================================================================
@@ -49,6 +57,15 @@ class Grille :
         for v in antecedents :
             old, new = self.fromTuple2caseNumber(v), self.fromTuple2caseNumber(self.__fromage)
             self.__rewardMatrix[old, new] = 100
+
+        # Matrice de Proba
+        self.__gamma = GAMMA # learning parameter
+        self.__probabilityMatrix = np.matrix(np.zeros((self.__dim**2, self.__dim**2))) # que des 0 initialement
+        print("INFO: Qmatrix - {}".format(self.__probabilityMatrix))
+
+
+        # self.__fileModifications = [] # fifo. file des modifications faites et à prendre en compte
+
     # =============================================================================
     #                                  get...()
     # =============================================================================
@@ -167,6 +184,74 @@ class Grille :
         """ Transforme la position de la case (i, j) en son numéro """
         i,j = case
         return i*self.__dim+j
+
+    def doSomething(self, currentState):
+        """ Fait faire quelque chose à la souris """
+        actionsPossibles = self.casesVoisinesDisponibles(currentState)
+        self.__positionSouris = actionsPossibles[np.random.randint(0, len(actionsPossibles))] # maj position souris
+        return self.__positionSouris
+
+    def train(self, iterations):
+        """ Entraîne le programme à jouer pendant n iterations"""
+        tempsInit = time.time()
+        for i in range(iterations):
+            rdm = np.random.randint(0, self.__dim**2) # une case au hasard
+            currentState = (rdm//self.__dim, rdm%self.__dim)
+            action = self.doSomething(currentState)
+            self.updateProbabilityMatrix(currentState, action, gamma=self.__gamma)
+
+        # Normalisons la matrice de probabilités "entraînée"
+        print("INFO: Trained Q matrix ({}s) -".format(time.time()-tempsInit))
+        print(self.__probabilityMatrix/np.max(self.__probabilityMatrix)*100)
+        print('-'*20)
+
+    def play(self, initialState):
+        """ Fait jouer le programme """
+        steps = [initialState]
+        current_state = initialState
+        print("INFO: Initial state - {}".format(initialState))
+        print("INFO: Fromage - {}".format(self.fromTuple2caseNumber(self.__fromage)))
+
+        while current_state != self.fromTuple2caseNumber(self.__fromage) :
+            self.__positionSouris = (current_state//self.__dim, current_state%self.__dim)
+            # prochaine étape
+            next_step_index = np.where(self.__probabilityMatrix[current_state,] == np.max(self.__probabilityMatrix[current_state,]))[1]
+
+            if next_step_index.shape[0] > 1: # s'il y en a plusieurs (max atteint plusieurs fois)
+                next_step_index = int(np.random.choice(next_step_index, size = 1)) # on en choisi 1 au hasard
+            else:
+                next_step_index = int(next_step_index)
+
+            steps.append(next_step_index)
+            current_state = next_step_index
+
+            self.affichageGrille()
+
+        # Affiche le chemin selectionné
+        print("INFO: Selected path - {}".format(steps))
+        print("-"*20)
+
+    # =============================================================================
+    #                Fonctions utiles à la matrice de proba (Q-matrix)
+    # =============================================================================
+    def updateProbabilityMatrix(self, currentState, action, gamma=0.8):
+        """ Met à jour la matrice de probabilités """
+        # tuple -> case number
+        currentState = self.fromTuple2caseNumber(currentState )
+        action = self.fromTuple2caseNumber(action)
+
+        maxIndex = np.where(self.__probabilityMatrix[action,] == np.max(self.__probabilityMatrix[action,]))[1]
+
+        if maxIndex.shape[0] > 1: # s'il y a plus d'1 indice max
+            maxIndex = int(np.random.choice(maxIndex, size = 1)) # on en prend 1 au hasard
+        else:
+            maxIndex = int(maxIndex)
+        maxValue = self.__probabilityMatrix[action, maxIndex]
+
+        # Q learning formula
+        self.__probabilityMatrix[currentState, action] = self.__rewardMatrix[currentState, action] + gamma * maxValue
+
+        # DEBUG: print("Qmatrix - {}".format(self.__probabilityMatrix))
     # def faireBougerSourisRandom(self):
     #     """ Faire bouger la souris """
     #     voisinsSouris = self.casesVoisinesDisponibles(self.__souris.getPositionSouris())
