@@ -45,33 +45,6 @@ class Grille :
         print("INFO: Qmatrix init - {}".format(self.__probabilityMatrix))
 
 
-
-        # self.__fileModifications = [] # fifo. file des modifications faites et à prendre en compte
-
-    # =============================================================================
-    #                                  get...()
-    # =============================================================================
-
-    # def getGrille(self):
-    #     """ Renvoie la grille """
-    #     return(self.__grille)
-
-    # def getPositionMurs(self):
-    #     """ Renvoie les positions des murs """
-    #     return(self.__murs)
-    #
-    # def getPositionFromage(self):
-    #     """ Renvoie la position de l'objectif """
-    #     return(self.__fromage)
-    #
-    # def getPositionDecharge(self):
-    #     """ Renvoie les positions des différentes décharges """
-    #     return(self.__decharges)
-    #
-    # def getPositionEau(self):
-    #     """ Renvoie les positions des gouttes d'eau """
-    #     return(self.__gouttesEau)
-
     # =============================================================================
     #                                  add...()
     # =============================================================================
@@ -141,18 +114,6 @@ class Grille :
         for decharge in self.__decharges:
             grilleAffichage[decharge] = 'x'
 
-        # for case in self.getGrille():
-        #     if self.__souris.getPositionSouris() == case :
-        #         grilleAffichage[case] = 's'
-        #     elif case in self.getPositionEau():
-        #         grilleAffichage[case] = 'e'
-        #     elif case in self.getPositionDecharge():
-        #         grilleAffichage[case] = 'x'
-        #     elif case == self.getPositionFromage():
-        #         grilleAffichage[case] = 'o'
-        #     elif case in self.getPositionMurs():
-        #         grilleAffichage[case] = '#'
-
         # Affichage
         print("INFO: grille - \n{}".format(grilleAffichage))
         print("-"*40)
@@ -219,8 +180,6 @@ class Grille :
             steps.append(next_step_index)
             current_state = next_step_index
             self.setPositionSouris((current_state//self.__dim, current_state%self.__dim))
-
-            # self.affichageGrille()
 
         # Affiche le chemin selectionné
         print("INFO: Selected path - {}".format(steps))
@@ -290,12 +249,3 @@ class Grille :
         self.__probabilityMatrix[currentState, action] = (1-alpha)*self.__probabilityMatrix[currentState, action] + alpha*(self.__rewardMatrix[currentState, action] + gamma*maxValue)
 
         # DEBUG: print("Qmatrix - {}".format(self.__probabilityMatrix))
-    # def faireBougerSourisRandom(self):
-    #     """ Faire bouger la souris """
-    #     voisinsSouris = self.casesVoisinesDisponibles(self.__souris.getPositionSouris())
-    #     self.__souris.setPosition(voisinsSouris[random.randint(0, len(voisinsSouris))])
-    #     self.__fileModifications.append() # TODO: ajouter dans la file ce qu'il faut modif
-
-    # def majGrille(self):
-    #     """ Mise à jour des informations de la grille """
-    #     # Souris
