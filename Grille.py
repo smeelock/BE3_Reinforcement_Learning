@@ -42,7 +42,7 @@ class Grille :
         self.__gamma = GAMMA # discount factor, see https://en.wikipedia.org/wiki/Q-learning
         self.__alpha = ALPHA # learning rate, see https://en.wikipedia.org/wiki/Q-learning
         self.__probabilityMatrix = np.matrix(np.zeros([self.__dim**2, self.__dim**2])) # que des 0 initialement
-        print("INFO: Qmatrix init - {}".format(self.__probabilityMatrix))
+        # print("INFO: Qmatrix init - {}".format(self.__probabilityMatrix))
 
 
     # =============================================================================
@@ -145,7 +145,7 @@ class Grille :
         actionsPossibles = self.casesVoisinesDisponibles(currentState)
         return actionsPossibles[np.random.randint(len(actionsPossibles))] # parmi les cases dispo, en choisir une random
 
-    def train(self, iterations):
+    def train(self, iterations, debugMode=False):
         """ Entraîne le programme à jouer pendant n iterations"""
         tempsInit = time.time()
         for i in range(iterations):
@@ -155,9 +155,12 @@ class Grille :
             self.updateProbabilityMatrix(currentState, action, gamma=self.__gamma, alpha=self.__alpha)
 
         # Normalisons la matrice de probabilités "entraînée"
-        print("INFO: Trained Q matrix ({}s) -".format(time.time()-tempsInit))
-        print(self.__probabilityMatrix/np.max(self.__probabilityMatrix)*100)
-        print('-'*40)
+        if debugMode :
+            print("INFO: Trained Q matrix ({}s) -".format(time.time()-tempsInit))
+            print(self.__probabilityMatrix/np.max(self.__probabilityMatrix)*100)
+            print('-'*40)
+
+        return time.time()-tempsInit # on renvoie le temps d'exécution
 
     def play(self, initialState):
         """ Fait jouer le programme """
@@ -188,7 +191,7 @@ class Grille :
     # =============================================================================
     #                Fonctions utiles à la matrice de récompenses
     # =============================================================================
-    def updateRewardMatrix(self):
+    def updateRewardMatrix(self, debugMode=False):
         # reset
         self.__rewardMatrix = np.matrix(np.ones((self.__dim**2, self.__dim**2))) # matrice de n²*n² car on peut (potentiellement) aller de chaque case à chaque case,
                                             # ie n² états possibles vers n² autre états possibles
@@ -217,8 +220,9 @@ class Grille :
             old, new = self.fromTuple2caseNumber(v), self.fromTuple2caseNumber(self.__fromage)
             self.__rewardMatrix[old, new] = RWD_FROMAGE
 
-        print("INFO: Reward Matrix - {}".format(self.__rewardMatrix))
-        print("-"*40)
+        if debugMode:
+            print("INFO: Reward Matrix - {}".format(self.__rewardMatrix))
+            print("-"*40)
 
 
 
